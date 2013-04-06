@@ -3,7 +3,10 @@
 
 import collections
 import gc
+import os
 import sys
+import time
+import traceback
 
 __version__ = "0.9.0"
 
@@ -55,3 +58,67 @@ def mem_usage_by_type(obj):
         counts[type(o)] += sys.getsizeof(o)
 
     return counts
+
+
+def call_on_change(callable):
+    """Call callable() once, then whenever Python source files are changed
+
+    Print the result after each execution. Catch exceptions and print
+    those, too.
+
+    This doesn't yet manage dependencies between loaded modules, so if
+    "bar" requires "foo" it will not be reloaded when "foo" is
+    changed.
+
+    """
+    while 1:
+        lastrun = time.time()
+        print "========", lastrun
+        try:
+            print callable()
+        except:
+            traceback.print_exc()
+
+        # poll until some .pyc file has changed
+        while 1:
+            restart = False
+
+            for module in filter(_is_py_module, sys.modules.itervalues()):
+                if _module_changed_since(lastrun, module):
+                    print "=== reloading", module
+                    try:
+                        reload(module)
+                        restart = True
+                    except:
+                        restart = False
+                        lastrun = time.time()
+                        traceback.print_exc()
+                        continue
+
+            if restart:
+                break
+
+            time.sleep(0.5)
+
+
+def _module_changed_since(since, module):
+    filename = getattr(module, "__file__", None)
+    if filename and os.path.exists(filename)\
+            and _py_changed_since(since, filename):
+        return True
+
+
+def _py_changed_since(since, filename):
+    """True if the filename (or associated .py) has been modified"""
+    if filename.endswith(".pyc") or filename.endswith(".pyo"):
+        filename = filename[:-1]
+
+    return filename.endswith(".py") and os.path.getmtime(filename) > since
+
+
+def _is_py_module(module):
+    """True if the module has been loaded from a .py file"""
+    exts = frozenset([".pyc", ".pyo", ".py"])
+
+    filename = getattr(module, "__file__", None)
+    return filename and any(filename.endswith(ext) for ext in exts)
