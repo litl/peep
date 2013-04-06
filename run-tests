@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Install the dependencies in test-requirements.txt before running
+# this script.
+
+pep8 peep.py test_peep.py
+pyflakes peep.py test_peep.py
+python setup.py test
