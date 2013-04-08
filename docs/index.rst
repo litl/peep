@@ -6,17 +6,9 @@
 Welcome to peep's documentation!
 ================================
 
-Contents:
+Release v\ |release|.
 
-.. toctree::
-   :maxdepth: 2
+.. include:: ../README.rst
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+.. automodule:: peep
+    :members:
