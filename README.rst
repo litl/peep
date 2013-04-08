@@ -5,7 +5,8 @@ edit-compile-run cycle and some tools for estimating deep memory usage
 of objects.
 
 The reloading function runner was inspired by Bret Victor's talk,
-"Inventing on Principle". Automatic reexecution is the first step.
+"Inventing on Principle". Automatic reexecution is the first step, and
+peep may grow to include more functionality from that talk.
 
 Peep is a small API and has no dependencies outside of the Python
 standard library. It works with Python 2.6 and 2.7.
@@ -52,7 +53,7 @@ With foo.py:
     ======== 1365429591.13
     This is returned from foo.run()
 
-    [ modify foo.py 
+    [ modify foo.py ]
 
     === reloading <module 'foo' from 'foo.py'>
     ======== 1365429594.64
