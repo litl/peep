@@ -52,9 +52,10 @@ def mem_usage_by_type(obj):
     # This would use a collections.Counter(), but that doesn't exist
     # in 2.6.  You can always collections.Counter(result) on 2.7 if
     # you want its methods.
-    counts = collections.defaultdict(int)
+    counts = dict()
 
     for o in _visit_referents(obj):
+        counts.setdefault(type(o), 0)
         counts[type(o)] += sys.getsizeof(o)
 
     return counts
