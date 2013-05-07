@@ -2,9 +2,12 @@
 # coding: utf-8
 
 import collections
+import cProfile
 import gc
 import os
+import pstats
 import sys
+import tempfile
 import time
 import traceback
 
@@ -30,6 +33,30 @@ def _visit_referents(root):
         seen.add(id(obj))
         for child in gc.get_referents(obj):
             left.append(child)
+
+
+def print_stats(stats):
+    stats.strip_dirs().sort_stats("cumulative").print_stats(10)
+
+
+class cpu_profile(object):
+    def __init__(self, callback):
+        self.callback = callback
+
+    def __call__(self, func):
+        def wrapped(*args, **kwargs):
+            prof = cProfile.Profile()
+            ret = prof.runcall(func, *args, **kwargs)
+
+            with tempfile.NamedTemporaryFile() as dumpfile:
+                prof.dump_stats(dumpfile.name)
+                stats = pstats.Stats(dumpfile.name)
+
+                self.callback(stats)
+
+            return ret
+
+        return wrapped
 
 
 def mem_usage(obj):
