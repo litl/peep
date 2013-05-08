@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import optparse
+import peep
+import unittest2
+
+
+def discover(path, pattern):
+    return unittest2.TestLoader().discover(path, pattern)
+
+
+def test(tests, verbosity):
+    return unittest2.TextTestRunner(verbosity=verbosity).run(tests)
+
+
+def main():
+    parser = optparse.OptionParser(usage="Usage: %prog [options]")
+    parser.add_option("-d", "--dir", type="str", default=".",
+                      help="Root path to search for tests")
+    parser.add_option("-p", "--pattern", type="str", default="*_test.py",
+                      help="Filename path for test discovery")
+    parser.add_option("-v", "--verbosity", type="int", default="2",
+                      help="TestRunner verbosity")
+
+    (options, _) = parser.parse_args()
+
+    peep.call_on_change(lambda: test(discover(options.dir, options.pattern),
+                                     options.verbosity))
+
+
+if __name__ == "__main__":
+    main()
