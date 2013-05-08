@@ -2,15 +2,21 @@
 
 import optparse
 import peep
-import unittest2
+import sys
+
+if sys.hexversion >= 0x02070000:
+    import unittest
+else:
+    # Require unittest2 on Python 2.6 for its test discovery
+    import unittest2 as unittest
 
 
 def discover(path, pattern):
-    return unittest2.TestLoader().discover(path, pattern)
+    return unittest.defaultTestLoader.discover(path, pattern)
 
 
 def test(tests, verbosity):
-    return unittest2.TextTestRunner(verbosity=verbosity).run(tests)
+    return unittest.TextTestRunner(verbosity=verbosity).run(tests)
 
 
 def main():
