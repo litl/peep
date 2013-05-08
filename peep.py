@@ -111,7 +111,7 @@ def call_on_change(callable):
         while 1:
             restart = False
 
-            for module in filter(_is_py_module, sys.modules.itervalues()):
+            for module in filter(_is_py_module, sys.modules.values()):
                 if _module_changed_since(lastrun, module):
                     print "=== reloading", module
                     try:
